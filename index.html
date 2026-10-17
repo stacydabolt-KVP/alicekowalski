@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Алиса</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbf7f3;
+    --surface: #ffffff;
+    --ink: #3b2f2f;
+    --muted: #8a7a76;
+    --accent: #d98c8c;
+    --accent-soft: #f4dede;
+    --line: #eadfd8;
+    --shadow: 0 1px 2px rgba(59,47,47,.06), 0 8px 24px rgba(59,47,47,.06);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.5 Manrope, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .serif { font-family: "Cormorant Garamond", Georgia, serif; }
+
+  /* ---------- Экран пароля ---------- */
+  #lock {
+    min-height: 100vh; min-height: 100dvh;
+    display: grid; place-items: center;
+    padding: 24px 16px;
+    text-align: center;
+  }
+  #lock .card { width: 100%; max-width: 360px; }
+  .flower { font-size: 40px; line-height: 1; margin-bottom: 8px; }
+  #lock h1 { font-size: 64px; font-weight: 500; margin: 0; letter-spacing: .01em; }
+  #lock .date { color: var(--muted); margin: 4px 0 32px; }
+  #lock form { display: flex; gap: 8px; }
+  #lock input {
+    flex: 1; min-width: 0;
+    font: inherit; padding: 12px 16px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--surface); color: var(--ink); outline: none;
+  }
+  #lock input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  button {
+    font: inherit; font-weight: 600; cursor: pointer;
+    border: 0; border-radius: 999px; padding: 12px 20px;
+    background: var(--accent); color: #fff;
+  }
+  button:disabled { opacity: .6; cursor: default; }
+  #lock .err { color: #b4545a; min-height: 24px; margin-top: 12px; font-size: 14px; }
+  .shake { animation: shake .35s; }
+  @keyframes shake { 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  /* ---------- Альбом ---------- */
+  #album { display: none; }
+  header {
+    text-align: center;
+    padding: 56px 16px 32px;
+  }
+  header h1 { font-size: clamp(56px, 12vw, 96px); font-weight: 500; margin: 0; line-height: 1; }
+  header .sub { color: var(--muted); margin-top: 12px; }
+  header .age {
+    display: inline-block; margin-top: 16px;
+    padding: 6px 14px; border-radius: 999px;
+    background: var(--accent-soft); color: #9a5555; font-weight: 500; font-size: 14px;
+  }
+  main { max-width: 1200px; margin: 0 auto; padding: 0 16px 64px; }
+  .day-title {
+    font-size: 28px; font-weight: 500; margin: 32px 0 16px;
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .day-title small { font-family: Manrope, sans-serif; font-size: 14px; color: var(--muted); }
+  .grid { columns: 3 280px; column-gap: 12px; }
+  .tile {
+    break-inside: avoid; margin-bottom: 12px;
+    border-radius: 14px; overflow: hidden;
+    background: var(--accent-soft); box-shadow: var(--shadow);
+    cursor: zoom-in; position: relative;
+  }
+  .tile img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
+  .tile img.ready { opacity: 1; }
+  .empty { text-align: center; color: var(--muted); padding: 48px 16px; }
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding-bottom: 32px; }
+  footer a { color: inherit; }
+
+  /* ---------- Просмотр фото ---------- */
+  #viewer {
+    position: fixed; inset: 0; z-index: 10;
+    background: rgba(20,15,15,.94);
+    display: none; align-items: center; justify-content: center;
+    touch-action: pan-y;
+  }
+  #viewer.open { display: flex; }
+  #viewer img { max-width: 100vw; max-height: 100vh; max-height: 100dvh; object-fit: contain; user-select: none; }
+  #viewer .btn {
+    position: absolute; background: rgba(255,255,255,.12); color: #fff;
+    width: 44px; height: 44px; padding: 0; border-radius: 50%;
+    display: grid; place-items: center; font-size: 22px; font-weight: 400;
+  }
+  #viewer .btn:hover { background: rgba(255,255,255,.22); }
+  #v-close { top: 16px; right: 16px; }
+  #v-dl { top: 16px; right: 72px; text-decoration: none; }
+  #v-prev { left: 16px; top: 50%; transform: translateY(-50%); }
+  #v-next { right: 16px; top: 50%; transform: translateY(-50%); }
+  #v-count { position: absolute; bottom: 16px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.7); font-size: 13px; }
+  @media (max-width: 600px) {
+    #v-prev, #v-next { display: none; }
+    .grid { columns: 2; column-gap: 8px; }
+    .tile { margin-bottom: 8px; border-radius: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<section id="lock">
+  <div class="card">
+    <div class="flower">🌸</div>
+    <h1 class="serif">Алиса</h1>
+    <div class="date">родилась 17 октября 2026</div>
+    <form id="lock-form" autocomplete="on">
+      <input type="text" name="username" value="alice" autocomplete="username" hidden>
+      <input id="pw" type="password" placeholder="Пароль" autocomplete="current-password" required autofocus>
+      <button id="go" type="submit">Войти</button>
+    </form>
+    <div class="err" id="err"></div>
+  </div>
+</section>
+
+<section id="album">
+  <header>
+    <h1 class="serif">Алиса</h1>
+    <div class="sub">родилась 17 октября 2026</div>
+    <div class="age" id="age"></div>
+  </header>
+  <main id="days"></main>
+  <footer><a href="#" id="logout">Выйти</a></footer>
+</section>
+
+<div id="viewer" aria-modal="true" role="dialog">
+  <img id="v-img" alt="">
+  <a class="btn" id="v-dl" title="Скачать" download>↓</a>
+  <button class="btn" id="v-close" title="Закрыть">×</button>
+  <button class="btn" id="v-prev" title="Назад">‹</button>
+  <button class="btn" id="v-next" title="Вперёд">›</button>
+  <div id="v-count"></div>
+</div>
+
+<script>
+const BIRTH = new Date(2026, 9, 17);
+const STORE = "alice-album-pw";
+let key = null, photos = [], current = -1;
+const fullCache = new Map();
+
+const $ = id => document.getElementById(id);
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+async function deriveKey(password, cfg) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", hash: "SHA-256", salt: b64(cfg.salt), iterations: cfg.iterations },
+    base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+}
+
+async function fetchDecrypted(url) {
+  const r = await fetch(url, { cache: "no-cache" });
+  if (!r.ok) throw new Error(r.status);
+  const buf = new Uint8Array(await r.arrayBuffer());
+  return crypto.subtle.decrypt({ name: "AES-GCM", iv: buf.slice(0, 12) }, key, buf.slice(12));
+}
+
+async function blobUrl(kind, id) {
+  const data = await fetchDecrypted(`data/${kind}/${id}.bin`);
+  return URL.createObjectURL(new Blob([data], { type: "image/jpeg" }));
+}
+
+function plural(n, one, few, many) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+}
+
+function ageText() {
+  const now = new Date();
+  const days = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - BIRTH) / 864e5);
+  if (days < 0) return "";
+  if (days === 0) return "Сегодня день рождения 🎉";
+  if (days < 60) return `Алисе ${days} ${plural(days, "день", "дня", "дней")}`;
+  let months = (now.getFullYear() - BIRTH.getFullYear()) * 12 + now.getMonth() - BIRTH.getMonth();
+  if (now.getDate() < BIRTH.getDate()) months--;
+  if (months < 24) return `Алисе ${months} ${plural(months, "месяц", "месяца", "месяцев")}`;
+  const years = Math.floor(months / 12);
+  return `Алисе ${years} ${plural(years, "год", "года", "лет")}`;
+}
+
+const dayFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+
+function render() {
+  $("age").textContent = ageText();
+  const root = $("days");
+  root.innerHTML = "";
+  if (!photos.length) {
+    root.innerHTML = '<div class="empty">Фотографии скоро появятся 💕</div>';
+    return;
+  }
+  const groups = new Map();
+  photos.forEach((p, i) => {
+    const day = (p.taken || "").slice(0, 10) || "—";
+    if (!groups.has(day)) groups.set(day, []);
+    groups.get(day).push(i);
+  });
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      io.unobserve(e.target);
+      const img = e.target.querySelector("img");
+      blobUrl("thumb", img.dataset.id).then(u => { img.src = u; img.onload = () => img.classList.add("ready"); });
+    }
+  }, { rootMargin: "600px" });
+
+  for (const [day, idxs] of groups) {
+    const d = new Date(day + "T12:00:00");
+    const days = Math.round((d - BIRTH) / 864e5);
+    const h = document.createElement("h2");
+    h.className = "day-title serif";
+    h.textContent = isNaN(d) ? "Без даты" : dayFmt.format(d).replace(" г.", "");
+    if (!isNaN(d) && days >= 0) {
+      const s = document.createElement("small");
+      s.textContent = days === 0 ? "день рождения" : `${days}-й день`;
+      h.append(s);
+    }
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    for (const i of idxs) {
+      const p = photos[i];
+      const t = document.createElement("div");
+      t.className = "tile";
+      t.style.aspectRatio = `${p.w} / ${p.h}`;
+      t.innerHTML = `<img alt="" data-id="${p.id}">`;
+      t.onclick = () => openViewer(i);
+      grid.append(t);
+      io.observe(t);
+    }
+    root.append(h, grid);
+  }
+}
+
+async function showFull(i) {
+  current = (i + photos.length) % photos.length;
+  const p = photos[current];
+  $("v-count").textContent = `${current + 1} / ${photos.length}`;
+  const img = $("v-img");
+  const thumb = document.querySelector(`img[data-id="${p.id}"]`);
+  if (thumb && thumb.src) img.src = thumb.src;
+  if (!fullCache.has(p.id)) fullCache.set(p.id, blobUrl("full", p.id));
+  const url = await fullCache.get(p.id);
+  if (photos[current] === p) {
+    img.src = url;
+    $("v-dl").href = url;
+    $("v-dl").download = `alisa-${p.id}.jpg`;
+  }
+  const next = photos[(current + 1) % photos.length];
+  if (!fullCache.has(next.id)) fullCache.set(next.id, blobUrl("full", next.id));
+}
+
+function openViewer(i) { $("viewer").classList.add("open"); document.body.style.overflow = "hidden"; showFull(i); }
+function closeViewer() { $("viewer").classList.remove("open"); document.body.style.overflow = ""; current = -1; }
+$("v-close").onclick = closeViewer;
+$("v-prev").onclick = e => { e.stopPropagation(); showFull(current - 1); };
+$("v-next").onclick = e => { e.stopPropagation(); showFull(current + 1); };
+$("viewer").onclick = e => { if (e.target.id === "viewer") closeViewer(); };
+document.addEventListener("keydown", e => {
+  if (current < 0) return;
+  if (e.key === "Escape") closeViewer();
+  if (e.key === "ArrowLeft") showFull(current - 1);
+  if (e.key === "ArrowRight") showFull(current + 1);
+});
+let touchX = null;
+$("viewer").addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, { passive: true });
+$("viewer").addEventListener("touchend", e => {
+  if (touchX === null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) showFull(current + (dx < 0 ? 1 : -1));
+  touchX = null;
+});
+
+async function unlock(password, remember) {
+  const cfg = await (await fetch("data/config.json", { cache: "no-cache" })).json();
+  key = await deriveKey(password, cfg);
+  try {
+    photos = JSON.parse(new TextDecoder().decode(await fetchDecrypted("data/manifest.bin")));
+  } catch (e) {
+    key = null;
+    throw e;
+  }
+  if (remember) try { localStorage.setItem(STORE, password); } catch {}
+  $("lock").style.display = "none";
+  $("album").style.display = "block";
+  render();
+}
+
+$("lock-form").onsubmit = async e => {
+  e.preventDefault();
+  $("go").disabled = true;
+  $("err").textContent = "";
+  try {
+    await unlock($("pw").value, true);
+  } catch {
+    $("err").textContent = "Неверный пароль";
+    $("lock-form").classList.remove("shake"); void $("lock-form").offsetWidth;
+    $("lock-form").classList.add("shake");
+  }
+  $("go").disabled = false;
+};
+
+$("logout").onclick = e => {
+  e.preventDefault();
+  try { localStorage.removeItem(STORE); } catch {}
+  location.reload();
+};
+
+(async () => {
+  let saved = null;
+  try { saved = localStorage.getItem(STORE); } catch {}
+  if (saved) {
+    try { await unlock(saved, false); }
+    catch { try { localStorage.removeItem(STORE); } catch {} }
+  }
+})();
+</script>
+</body>
+</html>
