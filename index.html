@@ -5,39 +5,59 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Алиса</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23fc5f2b'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='22' y='22' width='56' height='56' rx='10' transform='rotate(45 50 50)' fill='%23ff6363'/></svg>">
+<meta name="theme-color" content="#040506">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --coral: #fc5f2b;
-    --carbon: #18181b;
-    --zinc: #71717a;
-    --ash: #a1a1aa;
-    --mist: #e4e4e7;
-    --fog: #f4f4f5;
-    --paper: #ffffff;
-    --font: "Inter Tight", ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
-    --shadow-subtle: rgba(0,0,0,.05) 0 2px 2px 0;
+    --void: #040506;
+    --ink: #07080a;
+    --obsidian: #111214;
+    --graphite: #1b1c1e;
+    --smoke: #6a6b6c;
+    --ash: #9c9c9d;
+    --mist: #e6e6e6;
+    --iron: #454647;
+    --border: #363739;
+    --white: #ffffff;
+    --coral: #ff6363;
+    --font: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --mono: "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --key: rgba(255,255,255,.05) 0 1px 0 0 inset, rgba(255,255,255,.25) 0 0 0 1px, rgba(0,0,0,.2) 0 -1px 0 0 inset;
+    --lift: rgba(0,0,0,.03) 0 7px 3px 0, rgba(0,0,0,.25) 0 4px 4px 0;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
-    background: var(--paper);
-    color: var(--carbon);
-    font: 400 15px/1.5 var(--font);
-    letter-spacing: -0.005em;
+    background: var(--void);
+    color: var(--white);
+    font: 400 16px/1.5 var(--font);
+    font-feature-settings: "calt", "kern", "liga", "ss03";
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
   }
-  .mono {
-    font-family: var(--mono); font-size: 11px; line-height: 1.5;
-    letter-spacing: -0.006em; text-transform: uppercase;
+  .mono { font-family: var(--mono); font-size: 12px; line-height: 1.6; letter-spacing: .017em; color: var(--smoke); }
+  .eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: var(--ash); }
+  .display { font-size: 56px; line-height: 1.17; letter-spacing: .004em; font-weight: 400; margin: 0; }
+  .diamond { width: 12px; height: 12px; border-radius: 3px; background: var(--coral); transform: rotate(45deg); flex: none; }
+
+  /* Атмосферная подложка hero: красно-синяя геометрия */
+  .atmo { position: relative; overflow: hidden; isolation: isolate; }
+  .atmo::before, .atmo::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
+  .atmo::before {
+    inset: 0;
+    background:
+      radial-gradient(70% 55% at 50% 26%, rgba(4,63,150,.7), rgba(6,18,37,.25) 60%, transparent 80%),
+      linear-gradient(to bottom, transparent 60%, var(--void));
   }
-  .display { font-size: 66px; line-height: 1; letter-spacing: -0.025em; font-weight: 400; margin: 0; }
-  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--coral); }
+  .atmo::after {
+    left: 50%; top: 18%; width: 140%; height: 120px;
+    transform: translateX(-50%) rotate(-14deg);
+    background: linear-gradient(90deg, transparent 10%, rgba(255,99,99,.75) 45%, rgba(99,161,255,.5) 70%, transparent 90%);
+    filter: blur(40px); opacity: .7;
+  }
 
   /* ---------- Экран пароля ---------- */
   #lock {
@@ -45,150 +65,150 @@
     display: grid; place-items: center;
     padding: 24px 16px;
     text-align: center;
-    color: var(--paper);
-    background:
-      radial-gradient(120% 70% at 50% 110%, rgba(252,95,43,.22), transparent 60%),
-      radial-gradient(90% 60% at 50% 0%, #1f2a33 0%, transparent 70%),
-      #0c0c0e;
   }
   #lock .card { width: 100%; max-width: 400px; }
-  #lock .display { font-size: clamp(56px, 16vw, 88px); }
-  #lock .date { color: rgba(255,255,255,.6); font-size: 17px; line-height: 1.4; letter-spacing: -0.009em; margin: 16px 0 40px; }
-  #lock form { display: flex; gap: 8px; }
+  #lock .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+  #lock .display { font-size: clamp(56px, 14vw, 64px); line-height: 1.1; }
+  #lock .date { color: var(--ash); font-size: 16px; margin: 16px 0 40px; }
+  #lock form {
+    display: flex; gap: 8px; padding: 8px;
+    background: rgba(7,8,10,.6); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px);
+    border-radius: 16px; box-shadow: var(--key);
+  }
   #lock input {
     flex: 1; min-width: 0;
-    font: inherit; font-size: 15px; padding: 14px 20px;
-    border: 1px solid rgba(255,255,255,.14); border-radius: 9999px;
-    background: rgba(255,255,255,.06); color: var(--paper); outline: none;
+    font: inherit; padding: 8px 12px;
+    border: 0; border-radius: 8px;
+    background: rgba(255,255,255,.05); color: var(--white); outline: none;
   }
-  #lock input::placeholder { color: rgba(255,255,255,.45); }
-  #lock input:focus { border-color: rgba(255,255,255,.4); }
-  .cta {
-    font: 700 15px/1 var(--font); letter-spacing: -0.009em; cursor: pointer;
-    border: 0; border-radius: 9999px; padding: 15px 24px;
-    background: var(--coral); color: var(--paper);
+  #lock input::placeholder { color: var(--ash); }
+  #lock input:focus { box-shadow: rgba(255,255,255,.25) 0 0 0 1px; }
+  .btn-mist {
+    font: 500 14px/1 var(--font); cursor: pointer;
+    border: 0; border-radius: 8px; padding: 12px 16px;
+    background: var(--mist); color: var(--iron); box-shadow: var(--lift);
     display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
   }
-  .cta:disabled { opacity: .6; cursor: default; }
-  #lock .err { color: #ff8b64; min-height: 22px; margin-top: 12px; font-size: 13px; }
-  #lock .trust { margin-top: 24px; color: rgba(255,255,255,.45); }
+  .btn-mist:hover { background: var(--white); }
+  .btn-mist:disabled { opacity: .6; cursor: default; }
+  #lock .err { color: var(--ash); min-height: 24px; margin-top: 16px; font-size: 14px; }
+  #lock .meta { margin-top: 16px; }
   .shake { animation: shake .35s; }
   @keyframes shake { 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
   /* ---------- Альбом ---------- */
   #album { display: none; }
   nav {
-    position: sticky; top: 12px; z-index: 5;
-    max-width: 1200px; margin: 12px auto 0; width: calc(100% - 32px);
-    background: var(--carbon); color: var(--paper);
-    border-radius: 15px; padding: 12px 19px;
+    position: sticky; top: 16px; z-index: 5;
+    max-width: 1200px; margin: 16px auto 0; width: calc(100% - 32px);
+    background: rgba(4,5,6,.6); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 8px 8px 16px;
     display: flex; align-items: center; gap: 16px;
   }
-  nav .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; letter-spacing: -0.012em; }
-  nav .age { flex: 1; text-align: center; color: rgba(255,255,255,.6); font-size: 13px; }
-  nav a { color: rgba(255,255,255,.6); font-size: 13px; text-decoration: none; }
-  nav a:hover { color: var(--paper); text-decoration: underline; }
-  header {
-    max-width: 1200px; margin: 0 auto;
-    padding: 75px 16px 16px;
-  }
-  header .sub { color: var(--zinc); font-size: 17px; line-height: 1.4; letter-spacing: -0.009em; margin-top: 16px; max-width: 480px; }
-  header .meta { color: var(--zinc); margin-top: 24px; display: flex; gap: 16px; flex-wrap: wrap; }
-  main { max-width: 1200px; margin: 0 auto; padding: 0 16px 75px; }
-  .day { border-top: 1px solid var(--mist); margin-top: 60px; padding-top: 24px; }
-  .day-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
-  .day-title { font-size: 30px; line-height: 1.2; letter-spacing: -0.013em; font-weight: 400; margin: 0; }
-  .day-head .mono { color: var(--zinc); }
-  .grid { columns: 3 280px; column-gap: 11px; }
+  nav .brand { display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 14px; letter-spacing: .014em; }
+  nav .age { flex: 1; text-align: center; color: var(--ash); font-size: 13px; font-weight: 500; letter-spacing: .008em; }
+  nav a.btn-mist { text-decoration: none; padding: 8px 12px; font-size: 13px; }
+  header.atmo { margin-top: -64px; padding: 160px 16px 96px; text-align: center; }
+  header .sub { color: var(--ash); font-size: 18px; line-height: 1.4; margin: 16px auto 0; max-width: 480px; }
+  header .meta { margin-top: 24px; }
+  header .meta span + span::before { content: " | "; color: var(--iron); }
+  main { max-width: 1200px; margin: 0 auto; padding: 0 16px 120px; }
+  .day { margin-top: 80px; }
+  .day-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  .day-title { font-size: 32px; line-height: 1.15; font-weight: 400; margin: 0; }
+  .badge { background: var(--graphite); color: var(--white); border-radius: 6px; padding: 4px 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .017em; white-space: nowrap; }
+  .grid { columns: 3 280px; column-gap: 16px; }
   .tile {
-    break-inside: avoid; margin-bottom: 11px;
-    border-radius: 15px; overflow: hidden;
-    background: var(--fog);
+    break-inside: avoid; margin-bottom: 16px;
+    border-radius: 16px; overflow: hidden; padding: 0;
+    background: var(--ink); box-shadow: var(--key);
     cursor: zoom-in; position: relative;
   }
-  .tile img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s, transform .6s; }
+  .tile img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
+  .tile::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--key); pointer-events: none; }
   .tile img.ready { opacity: 1; }
-  .tile:hover img.ready { transform: scale(1.02); }
+  .tile:hover::after { box-shadow: rgba(255,255,255,.1) 0 1px 0 0 inset, rgba(255,255,255,.5) 0 0 0 1px; }
   .empty {
-    margin-top: 60px; padding: 60px 19px; text-align: center;
-    border: 1px solid var(--mist); border-radius: 15px; background: var(--paper);
-    box-shadow: var(--shadow-subtle);
+    margin-top: 0; padding: 64px 24px; text-align: center;
+    border-radius: 20px; background: var(--ink); box-shadow: var(--key);
   }
-  .empty h3 { font-size: 22px; line-height: 1.25; letter-spacing: -0.012em; font-weight: 400; margin: 0 0 8px; }
-  .empty p { color: var(--zinc); margin: 0; }
-  footer { max-width: 1200px; margin: 0 auto; padding: 24px 16px 40px; border-top: 1px solid var(--mist); color: var(--ash); display: flex; justify-content: space-between; }
+  .empty h3 { font-size: 24px; line-height: 1.15; font-weight: 500; margin: 0 0 8px; }
+  .empty p { color: var(--ash); margin: 0; }
+  footer { text-align: center; padding: 40px 16px 48px; border-top: 1px solid var(--graphite); }
+  footer span + span::before { content: " | "; color: var(--iron); }
 
   /* ---------- Просмотр фото ---------- */
   #viewer {
     position: fixed; inset: 0; z-index: 10;
-    background: #0c0c0e;
+    background: var(--void);
     display: none; align-items: center; justify-content: center;
     touch-action: pan-y;
   }
   #viewer.open { display: flex; }
   #viewer img { max-width: 100vw; max-height: 100vh; max-height: 100dvh; object-fit: contain; user-select: none; }
   #viewer .btn {
-    position: absolute; background: rgba(255,255,255,.1); color: var(--paper);
-    width: 44px; height: 44px; padding: 0; border: 0; border-radius: 9999px; cursor: pointer;
-    display: grid; place-items: center; font: 400 20px/1 var(--font);
+    position: absolute; background: rgba(7,8,10,.6); color: var(--mist);
+    backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px);
+    width: 40px; height: 40px; padding: 0; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+    display: grid; place-items: center; font: 500 18px/1 var(--font);
   }
-  #viewer .btn:hover { background: rgba(255,255,255,.2); }
+  #viewer .btn:hover { color: var(--white); border-color: var(--ash); }
   #v-close { top: 16px; right: 16px; }
-  #v-dl { top: 16px; right: 68px; text-decoration: none; }
+  #v-dl { top: 16px; right: 64px; text-decoration: none; }
   #v-prev { left: 16px; top: 50%; transform: translateY(-50%); }
   #v-next { right: 16px; top: 50%; transform: translateY(-50%); }
-  #v-count { position: absolute; bottom: 16px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.6); }
+  #v-count { position: absolute; bottom: 16px; left: 0; right: 0; text-align: center; }
   @media (max-width: 600px) {
-    .display { font-size: 56px; }
-    header { padding-top: 60px; }
+    .display { font-size: 48px; }
+    header.atmo { padding: 128px 16px 64px; }
     nav .age { display: none; }
     nav .brand { flex: 1; }
-    #v-prev, #v-next { display: none; }
+    #viewer #v-prev, #viewer #v-next { display: none; }
     .grid { columns: 2; column-gap: 8px; }
-    .tile { margin-bottom: 8px; border-radius: 7.5px; }
-    .day { margin-top: 40px; }
-    .day-title { font-size: 22px; }
+    .tile { margin-bottom: 8px; border-radius: 8px; }
+    .day { margin-top: 56px; }
+    .day-title { font-size: 24px; }
   }
 </style>
 </head>
 <body>
 
-<section id="lock">
+<section id="lock" class="atmo">
   <div class="card">
+    <div class="eyebrow"><span class="diamond"></span>Семейный альбом</div>
     <h1 class="display">Алиса</h1>
     <div class="date">Родилась 17 октября 2026</div>
     <form id="lock-form" autocomplete="on">
       <input type="text" name="username" value="alice" autocomplete="username" hidden>
       <input id="pw" type="password" placeholder="Пароль" autocomplete="current-password" required autofocus>
-      <button id="go" class="cta" type="submit">Войти <span aria-hidden="true">→</span></button>
+      <button id="go" class="btn-mist" type="submit">Войти <span aria-hidden="true">↵</span></button>
     </form>
     <div class="err" id="err"></div>
-    <div class="trust mono">Фото зашифрованы · доступ только по паролю</div>
+    <div class="meta mono">Фото зашифрованы | доступ только по паролю</div>
   </div>
 </section>
 
 <section id="album">
   <nav>
-    <div class="brand"><span class="dot"></span>Алиса</div>
+    <div class="brand"><span class="diamond"></span>Алиса</div>
     <div class="age" id="nav-age"></div>
-    <a href="#" id="logout">Выйти</a>
+    <a href="#" id="logout" class="btn-mist">Выйти</a>
   </nav>
-  <header>
+  <header class="atmo">
     <h1 class="display">Алиса</h1>
     <div class="sub">Родилась 17 октября 2026. Здесь собираем фотографии её первых дней.</div>
-    <div class="meta mono"><span id="age"></span><span id="count"></span></div>
+    <div class="meta mono"><span id="age"></span><span id="count"></span><span>alicekowalski.com</span></div>
   </header>
   <main id="days"></main>
-  <footer class="mono"><span>alicekowalski.com</span><span>2026</span></footer>
+  <footer class="mono"><span>alicekowalski.com</span><span>с любовью</span><span>2026</span></footer>
 </section>
-
 <div id="viewer" aria-modal="true" role="dialog">
   <img id="v-img" alt="">
   <a class="btn" id="v-dl" title="Скачать" download>↓</a>
   <button class="btn" id="v-close" title="Закрыть">×</button>
   <button class="btn" id="v-prev" title="Назад">‹</button>
   <button class="btn" id="v-next" title="Вперёд">›</button>
-  <div id="v-count"></div>
+  <div id="v-count" class="mono"></div>
 </div>
 
 <script>
@@ -278,7 +298,7 @@ function render() {
     h.className = "day-title";
     h.textContent = isNaN(d) ? "Без даты" : dayFmt.format(d).replace(" г.", "");
     const s = document.createElement("span");
-    s.className = "mono";
+    s.className = "badge";
     const label = isNaN(d) || days < 0 ? "" : days === 0 ? "День рождения · " : `День ${days + 1} · `;
     s.textContent = label + photoCount(idxs.length);
     head.append(h, s);
