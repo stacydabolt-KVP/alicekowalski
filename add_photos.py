@@ -14,6 +14,7 @@ import base64
 import getpass
 import hashlib
 import json
+import re
 import os
 import shutil
 import subprocess
@@ -90,14 +91,26 @@ def render_jpeg(src: Path, dst: Path, max_side: int, quality: int) -> tuple:
     return int(p["pixelWidth"]), int(p["pixelHeight"])
 
 
-def taken_at(src: Path) -> str:
+def taken_at(src: Path, fallback_date: str = None) -> str:
     creation = sips_props(src).get("creation")  # "2026:10:17 14:03:22"
     if creation and creation != "<nil>":
         try:
             return datetime.strptime(creation, "%Y:%m:%d %H:%M:%S").isoformat()
         except ValueError:
             pass
-    return datetime.fromtimestamp(src.stat().st_mtime).replace(microsecond=0).isoformat()
+    mtime = datetime.fromtimestamp(src.stat().st_mtime).replace(microsecond=0)
+    # дата в имени файла: 17.10.26, 17.10.2026 или 2026-10-17
+    m = re.search(r"(\d{1,2})\.(\d{1,2})\.(\d{4}|\d{2})(?!\d)", src.stem)
+    if m:
+        d, mo, y = int(m[1]), int(m[2]), int(m[3])
+        y = y + 2000 if y < 100 else y
+        return f"{y:04d}-{mo:02d}-{d:02d}T{mtime.time().isoformat()}"
+    m = re.search(r"(\d{4})-(\d{2})-(\d{2})", src.stem)
+    if m:
+        return f"{m[1]}-{m[2]}-{m[3]}T{mtime.time().isoformat()}"
+    if fallback_date:
+        return f"{fallback_date}T{mtime.time().isoformat()}"
+    return mtime.isoformat()
 
 
 def collect(paths: list) -> list:
@@ -144,6 +157,7 @@ def main() -> None:
     ap.add_argument("paths", nargs="*")
     ap.add_argument("--no-push", action="store_true", help="не публиковать на сайт")
     ap.add_argument("--set-password", action="store_true")
+    ap.add_argument("--date", help="дата для фото без даты съёмки, например 2026-10-17")
     args = ap.parse_args()
 
     if args.set_password:
@@ -182,7 +196,7 @@ def main() -> None:
             (DATA / "full" / f"{pid}.bin").write_bytes(encrypt(key, full.read_bytes()))
             (DATA / "thumb" / f"{pid}.bin").write_bytes(encrypt(key, thumb.read_bytes()))
             shutil.copy2(src, ORIGINALS / f"{pid}{src.suffix.lower()}")
-            items.append({"id": pid, "sha": sha, "w": w, "h": h, "taken": taken_at(src), "name": src.name})
+            items.append({"id": pid, "sha": sha, "w": w, "h": h, "taken": taken_at(src, args.date), "name": src.name})
             known.add(sha)
             added += 1
             print(f"  + {src.name}")
