@@ -3,3 +3,4 @@ originals/
 .password
 .DS_Store
 __pycache__/
+.claude/

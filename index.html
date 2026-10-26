@@ -116,6 +116,10 @@
   .day { margin-top: 80px; }
   .day-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
   .day-title { font-size: 32px; line-height: 1.15; font-weight: 400; margin: 0; }
+  .day-note { margin-top: 8px; font-size: 18px; line-height: 1.4; color: var(--ash); }
+  .day-note.birthday { color: var(--white); display: inline-flex; align-items: center; gap: 12px; padding: 4px 12px 4px 10px; border-radius: 8px; background: #452324; }
+  .day-note.birthday::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--coral); transform: rotate(45deg); }
+  .day-head { align-items: flex-start; }
   .badge { background: var(--graphite); color: var(--white); border-radius: 6px; padding: 4px 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .017em; white-space: nowrap; }
   .grid { columns: 3 280px; column-gap: 16px; }
   .tile {
@@ -214,6 +218,8 @@
 <script>
 const BIRTH = new Date(2026, 9, 17);
 const STORE = "alice-album-pw";
+// Подписи к особым дням: ключ — сколько дней от рождения
+const SPECIAL_DAYS = { "-1": "За день до появления Алисы", 0: "День рождения!!" };
 let key = null, photos = [], current = -1;
 const fullCache = new Map();
 
@@ -289,7 +295,7 @@ function render() {
 
   for (const [day, idxs] of groups) {
     const d = new Date(day + "T12:00:00");
-    const days = Math.round((d - BIRTH) / 864e5);
+    const days = Math.round((new Date(day + "T00:00:00") - BIRTH) / 864e5);
     const section = document.createElement("section");
     section.className = "day";
     const head = document.createElement("div");
@@ -297,11 +303,20 @@ function render() {
     const h = document.createElement("h2");
     h.className = "day-title";
     h.textContent = isNaN(d) ? "Без даты" : dayFmt.format(d).replace(" г.", "");
+    const titles = document.createElement("div");
+    titles.append(h);
+    const note = isNaN(d) ? "" : SPECIAL_DAYS[days] || "";
+    if (note) {
+      const c = document.createElement("div");
+      c.className = "day-note" + (days === 0 ? " birthday" : "");
+      c.textContent = note;
+      titles.append(c);
+    }
     const s = document.createElement("span");
     s.className = "badge";
-    const label = isNaN(d) || days < 0 ? "" : days === 0 ? "День рождения · " : `День ${days + 1} · `;
+    const label = isNaN(d) || days < 1 ? "" : `День ${days + 1} · `;
     s.textContent = label + photoCount(idxs.length);
-    head.append(h, s);
+    head.append(titles, s);
     const grid = document.createElement("div");
     grid.className = "grid";
     for (const i of idxs) {
